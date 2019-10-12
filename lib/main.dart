@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:movieapp/data/storage.dart';
 import 'dart:convert';
+
+import 'package:movieapp/pages/movielist.dart';
 
 void main() => runApp(MyApp());
 
@@ -27,6 +30,14 @@ class _MyAppState extends State<MyApp> {
 
 @override
   void initState() {
+    Storage().getDarkPref().then((value) {
+      if (value != null) {
+        setState(() {
+          isDark = value;
+        });
+      }
+    });
+
     fetchMovies();
     super.initState();
   }
@@ -45,7 +56,9 @@ class _MyAppState extends State<MyApp> {
           actions: <Widget>[
             Switch(
               value: isDark,
-              onChanged: (value) {
+              onChanged: (value) async{
+                await Storage().saveDarkThemValue(value);
+
                 setState(() {
                   isDark = value;
                 });
@@ -61,7 +74,7 @@ class _MyAppState extends State<MyApp> {
                 child: ListView.builder(
                   itemCount: movies.length,
                   itemBuilder: (context, i) {
-                    return Text("I'm data");
+                    return MovieItem(movie: movies[i],);
                   },
                 ),
             ),
